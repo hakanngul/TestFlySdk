@@ -1,0 +1,87 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+.kotlin
+
+.idea/
+
+### IntelliJ IDEA ###
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+*.iws
+*.iml
+*.ipr
+logs/
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+
+### Logs ###
+*.log
+logs/
+
+### Test Reports and Artifacts ###
+test-output/
+allure-results/
+allure-report/
+extent-reports/
+screenshots/
+*.png
+*.jpg
+*.jpeg
+
+### Environment Configuration ###
+.env
+.env.local
+.env.*.local
+
+### Temporary Files ###
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+### IDE specific ###
+.factorypath
+.springBeans
+
+### Maven ###
+mvnw
+mvnw.cmd
+.mvn/
+
+### Playwright ###
+playwright-*
+.ms-playwright/
+
+### Test Data ###
+test-data/temp/
+*.csv.bak
+*.xlsx.bak
+*.json.bak

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extentreports>
+    <configuration>
+        <!-- Report theme -->
+        <theme>standard</theme>
+
+        <!-- Document title of report -->
+        <documentTitle>TestFly Automation Report</documentTitle>
+
+        <!-- Report name -->
+        <reportName>Test Execution Report</reportName>
+
+        <!-- Encoding -->
+        <encoding>UTF-8</encoding>
+
+        <!-- Protocol -->
+        <protocol>https</protocol>
+
+        <!-- Time stamp format -->
+        <timeStampFormat>MMM dd, yyyy HH:mm:ss</timeStampFormat>
+
+        <!-- JavaScript -->
+        <js>$(document).ready(function(){});</js>
+
+        <!-- PDF configuration -->
+        <useManualPagination>true</useManualPagination>
+
+        <!-- Navigation -->
+        <navigation>
+            <topNavigation>TestFly Automation Report</topNavigation>
+        </navigation>
+
+        <!-- Charts -->
+        <charts>
+            <chart>
+                <type>pie</type>
+                <title>Test Status</title>
+                <description>Test execution status breakdown</description>
+                <xAxis></xAxis>
+                <yAxis>Count</yAxis>
+            </chart>
+        </charts>
+
+        <!-- System info -->
+        <systemInfo>
+            <info>
+                <key>OS</key>
+                <value>Mac OS</value>
+            </info>
+            <info>
+                <key>Java Version</key>
+                <value>21</value>
+            </info>
+            <info>
+                <key>Playwright Version</key>
+                <value>1.48.0</value>
+            </info>
+        </systemInfo>
+    </configuration>
+</extentreports>

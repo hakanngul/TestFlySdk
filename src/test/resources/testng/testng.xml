@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+
+<suite name="TestFly Test Suite" parallel="tests" thread-count="4" verbose="1">
+
+    <!-- Listeners -->
+<!--    <listeners>-->
+<!--        <listener class-name="com.testfly.sdk.listeners.ExecutionListener"/>-->
+<!--        <listener class-name="com.testfly.sdk.listeners.WebTestListener"/>-->
+<!--        <listener class-name="com.testfly.sdk.listeners.ApiTestListener"/>-->
+<!--        <listener class-name="com.testfly.sdk.listeners.ExtentReportListener"/>-->
+<!--    </listeners>-->
+
+    <!-- Parameters -->
+    <parameter name="browser" value="chrome"/>
+    <parameter name="headless" value="true"/>
+
+    <!-- Cucumber Web Tests -->
+    <test name="Cucumber Web Tests">
+        <classes>
+            <class name="com.testfly.sdk.tests.steps.WebTestRunner"/>
+        </classes>
+    </test>
+
+    <!-- Cucumber API Tests -->
+    <test name="Cucumber API Tests">
+        <classes>
+            <class name="com.testfly.sdk.tests.steps.ApiTestRunner"/>
+        </classes>
+    </test>
+
+</suite>
+
