@@ -5,7 +5,8 @@ import com.microsoft.playwright.APIResponse;
 import com.microsoft.playwright.options.RequestOptions;
 import com.testfly.sdk.api.base.BaseApiTest;
 import com.testfly.sdk.core.ConfigManager;
-import com.testfly.sdk.exceptions.FrameworkException;
+import com.testfly.sdk.exceptions.ApiRequestException;
+import com.testfly.sdk.exceptions.RetryExhaustedException;
 import io.qameta.allure.Allure;
 
 import java.util.HashMap;
@@ -22,7 +23,7 @@ public class ApiEngine {
 
     public ApiResponse executeWithRetry(String method, String endpoint, Map<String, String> headers, Object body, Map<String, Object> queryParams) {
         int maxRetries = ConfigManager.get().apiMaxRetries();
-        long retryDelay = ConfigManager.get().apiRetryDelay();
+        long baseDelay = ConfigManager.get().apiRetryDelay();
         int attempts = 0;
         Exception lastException = null;
 
@@ -33,15 +34,27 @@ public class ApiEngine {
                 lastException = e;
                 attempts++;
                 if (attempts <= maxRetries) {
-                    api.getLogger().warn("Request failed (Attempt {}/{}), retrying in {}ms...", attempts, maxRetries, retryDelay);
-                    sleep(retryDelay);
+                    long delay = baseDelay * (1L << (attempts - 1));
+                    api.getLogger().warn("Request failed (Attempt {}/{}), retrying in {}ms...", attempts, maxRetries, delay);
+                    sleep(delay);
                 }
             }
         }
-        throw new FrameworkException("Request failed after " + maxRetries + " attempts", lastException);
+        throw new RetryExhaustedException("Request failed after " + maxRetries + " attempts", attempts, lastException);
     }
 
     private ApiResponse run(String method, String endpoint, Map<String, String> headers, Object body, Map<String, Object> queryParams) {
+        try {
+            return doExecute(method, endpoint, headers, body, queryParams);
+        } catch (RetryExhaustedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ApiRequestException(
+                String.format("%s %s failed: %s", method, endpoint, e.getMessage()), e);
+        }
+    }
+
+    private ApiResponse doExecute(String method, String endpoint, Map<String, String> headers, Object body, Map<String, Object> queryParams) {
         long startTime = System.currentTimeMillis();
         String fullUrl = api.getBaseUrl() + (endpoint.startsWith("/") ? endpoint : "/" + endpoint);
 

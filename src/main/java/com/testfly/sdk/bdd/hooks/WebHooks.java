@@ -2,6 +2,7 @@ package com.testfly.sdk.bdd.hooks;
 
 import com.microsoft.playwright.Page;
 import com.testfly.sdk.core.BrowserManager;
+import com.testfly.sdk.core.ConfigManager;
 import com.testfly.sdk.core.PlaywrightManager;
 import com.testfly.sdk.core.LogManager;
 import com.testfly.sdk.utils.StringUtils;
@@ -24,8 +25,9 @@ public class WebHooks {
     public void beforeScenario(Scenario scenario) {
         logger.info("Starting scenario: {}", scenario.getName());
 
-        String browserType = "chrome";
+        String browserType = ConfigManager.get().browser();
         BrowserManager.initializeDriver(browserType);
+        BrowserManager.startTracing();
 
         logger.info("Browser initialized for thread: {}", Thread.currentThread().threadId());
     }
@@ -41,11 +43,13 @@ public class WebHooks {
 
         if (scenario.isFailed()) {
             logger.error("Scenario failed: {}", scenario.getName());
+            BrowserManager.stopTracing(scenario.getName());
             byte[] screenshot = takeScreenshotBytes(scenario);
             if (screenshot != null) {
                 Allure.addAttachment(scenario.getName() + "_screenshot.png", new ByteArrayInputStream(screenshot));
             }
         } else {
+            BrowserManager.stopAndDiscardTracing();
             logger.info("Scenario passed: {}", scenario.getName());
         }
 

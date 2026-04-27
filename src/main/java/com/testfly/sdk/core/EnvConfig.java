@@ -52,4 +52,16 @@ public interface EnvConfig extends Config {
     @Key("api.retry.delay")
     @DefaultValue("1000")
     int apiRetryDelay();
+
+    @Key("trace.enabled")
+    @DefaultValue("true")
+    boolean isTraceEnabled();
+
+    @Key("trace.path")
+    @DefaultValue("target/traces")
+    String tracePath();
+
+    @Key("retry.max")
+    @DefaultValue("2")
+    int retryMax();
 }

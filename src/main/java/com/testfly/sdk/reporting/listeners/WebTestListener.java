@@ -31,6 +31,7 @@ public class WebTestListener implements ITestListener, IInvokedMethodListener {
                 String browser = System.getProperty("browser", ConfigManager.get().browser());
                 logger.info("Initializing browser via Listener for: " + browser);
                 BrowserManager.initializeDriver(browser);
+                BrowserManager.startTracing();
             }
 
             ScenarioContext.clear();
@@ -43,6 +44,11 @@ public class WebTestListener implements ITestListener, IInvokedMethodListener {
             boolean isCucumber = isCucumberTest(testResult);
 
             if (!isCucumber) {
+                if (!testResult.isSuccess()) {
+                    BrowserManager.stopTracing(testResult.getName());
+                } else {
+                    BrowserManager.stopAndDiscardTracing();
+                }
                 logger.info("Closing browser via Listener for test: " + testResult.getName());
                 BrowserManager.quitDriver();
             }

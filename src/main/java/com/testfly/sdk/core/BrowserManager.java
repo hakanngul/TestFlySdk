@@ -2,12 +2,14 @@ package com.testfly.sdk.core;
 
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
-import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.Tracing;
+import com.testfly.sdk.exceptions.BrowserInitializationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class BrowserManager {
@@ -55,32 +57,14 @@ public class BrowserManager {
             logger.info("  Thread ID: {}", Thread.currentThread().threadId());
         } catch (Exception e) {
             logger.error("Error initializing browser: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to initialize browser", e);
+            throw new BrowserInitializationException("Failed to initialize browser", e);
         }
     }
 
     private static Browser createBrowser(Playwright playwright, String browserType) {
-        if ("chrome".equalsIgnoreCase(browserType) && !ConfigManager.get().isHeadless()) {
-            logger.info("Launching Chrome (headful mode)");
-            return playwright.chromium().launch(
-                    new BrowserType.LaunchOptions().setHeadless(false).setChannel("chrome")
-            );
-        }
-
-        logger.info("Launching browser: {} (headless: {})", browserType, ConfigManager.get().isHeadless());
-
-        return switch (browserType.toLowerCase()) {
-            case "chrome", "chromium" -> playwright.chromium().launch(
-                    new BrowserType.LaunchOptions().setHeadless(ConfigManager.get().isHeadless())
-            );
-            case "firefox" -> playwright.firefox().launch(
-                    new BrowserType.LaunchOptions().setHeadless(ConfigManager.get().isHeadless())
-            );
-            case "webkit" -> playwright.webkit().launch(
-                    new BrowserType.LaunchOptions().setHeadless(ConfigManager.get().isHeadless())
-            );
-            default -> throw new IllegalArgumentException("Unsupported browser type: " + browserType);
-        };
+        boolean headless = ConfigManager.get().isHeadless();
+        logger.info("Launching browser: {} (headless: {})", browserType, headless);
+        return BrowserFactory.launch(playwright, browserType, headless);
     }
 
     public static Page getPage() {
@@ -116,6 +100,57 @@ public class BrowserManager {
             }
         } catch (Exception e) {
             System.err.println("Error while quitting browser: " + e.getMessage());
+        }
+    }
+
+    public static void startTracing() {
+        if (!ConfigManager.get().isTraceEnabled()) {
+            return;
+        }
+        BrowserContext context = contextThreadLocal.get();
+        if (context != null) {
+            context.tracing().start(new Tracing.StartOptions()
+                .setScreenshots(true)
+                .setSnapshots(true)
+                .setSources(true));
+            logger.info("Trace recording started for thread: {}", Thread.currentThread().threadId());
+        }
+    }
+
+    public static void stopTracing(String testName) {
+        if (!ConfigManager.get().isTraceEnabled()) {
+            return;
+        }
+        BrowserContext context = contextThreadLocal.get();
+        if (context != null) {
+            try {
+                String tracePath = ConfigManager.get().tracePath();
+                Files.createDirectories(Paths.get(tracePath));
+
+                String safeName = testName.replaceAll("[^a-zA-Z0-9._-]", "_");
+                String filePath = tracePath + "/" + safeName + "_" + System.currentTimeMillis() + ".zip";
+
+                context.tracing().stop(new Tracing.StopOptions()
+                    .setPath(Paths.get(filePath)));
+                logger.info("Trace saved: {}", filePath);
+            } catch (Exception e) {
+                logger.warn("Failed to save trace for '{}': {}", testName, e.getMessage());
+            }
+        }
+    }
+
+    public static void stopAndDiscardTracing() {
+        if (!ConfigManager.get().isTraceEnabled()) {
+            return;
+        }
+        BrowserContext context = contextThreadLocal.get();
+        if (context != null) {
+            try {
+                context.tracing().stop();
+                logger.debug("Trace discarded for thread: {}", Thread.currentThread().threadId());
+            } catch (Exception e) {
+                logger.debug("Failed to discard trace: {}", e.getMessage());
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-package com.testfly.sdk.tests.api;
+package com.testfly.sdk.tests.runners;
 
 import io.cucumber.testng.AbstractTestNGCucumberTests;
 import io.cucumber.testng.CucumberOptions;

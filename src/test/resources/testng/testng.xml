@@ -18,16 +18,15 @@
     <!-- Cucumber Web Tests -->
     <test name="Cucumber Web Tests">
         <classes>
-            <class name="com.testfly.sdk.tests.web.WebTestRunner"/>
+            <class name="com.testfly.sdk.tests.runners.WebTestRunner"/>
         </classes>
     </test>
 
     <!-- Cucumber API Tests -->
     <test name="Cucumber API Tests">
         <classes>
-            <class name="com.testfly.sdk.tests.api.ApiTestRunner"/>
+            <class name="com.testfly.sdk.tests.runners.ApiTestRunner"/>
         </classes>
     </test>
 
 </suite>
-
