@@ -1,6 +1,6 @@
 package com.testfly.sdk.data;
 
-import com.testfly.sdk.manager.LogManager;
+import com.testfly.sdk.core.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

@@ -1,6 +1,6 @@
 package com.testfly.sdk.data;
 
-import com.testfly.sdk.manager.LogManager;
+import com.testfly.sdk.core.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;

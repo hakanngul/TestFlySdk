@@ -1,6 +1,6 @@
 package com.testfly.sdk.utils;
 
-import com.testfly.sdk.manager.LogManager;
+import com.testfly.sdk.core.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;

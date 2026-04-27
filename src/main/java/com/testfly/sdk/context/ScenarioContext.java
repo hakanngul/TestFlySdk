@@ -133,7 +133,7 @@ public class ScenarioContext {
 
     /**
      * CRITICAL METHOD: Clears memory at the end of the test.
-     * Should be called in BaseTest @AfterMethod.
+     * Should be called in BaseWebTest @AfterMethod.
      */
     public static void clear() {
         threadLocalContext.get().clear();

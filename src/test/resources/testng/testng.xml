@@ -5,10 +5,10 @@
 
     <!-- Listeners -->
 <!--    <listeners>-->
-<!--        <listener class-name="com.testfly.sdk.listeners.ExecutionListener"/>-->
-<!--        <listener class-name="com.testfly.sdk.listeners.WebTestListener"/>-->
-<!--        <listener class-name="com.testfly.sdk.listeners.ApiTestListener"/>-->
-<!--        <listener class-name="com.testfly.sdk.listeners.ExtentReportListener"/>-->
+<!--        <listener class-name="com.testfly.sdk.reporting.listeners.ExecutionListener"/>-->
+<!--        <listener class-name="com.testfly.sdk.reporting.listeners.WebTestListener"/>-->
+<!--        <listener class-name="com.testfly.sdk.reporting.listeners.ApiTestListener"/>-->
+<!--        <listener class-name="com.testfly.sdk.reporting.listeners.ExtentReportListener"/>-->
 <!--    </listeners>-->
 
     <!-- Parameters -->
@@ -18,14 +18,14 @@
     <!-- Cucumber Web Tests -->
     <test name="Cucumber Web Tests">
         <classes>
-            <class name="com.testfly.sdk.tests.steps.WebTestRunner"/>
+            <class name="com.testfly.sdk.tests.web.WebTestRunner"/>
         </classes>
     </test>
 
     <!-- Cucumber API Tests -->
     <test name="Cucumber API Tests">
         <classes>
-            <class name="com.testfly.sdk.tests.steps.ApiTestRunner"/>
+            <class name="com.testfly.sdk.tests.api.ApiTestRunner"/>
         </classes>
     </test>
 
