@@ -6,15 +6,17 @@ import org.apache.logging.log4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
- /**
-  * Thread-Safe repository used to carry data throughout the test scenario (Runtime).
-  * <p>
-  * Features:
-  * 1. Thread-Safe: Data does not get mixed during parallel test runs.
-  * 2. Type-Safe: Reduces the risk of casting errors thanks to generic methods.
-  * 3. Logged: Data addition/reading operations are logged, making debugging easier.
-  * </p>
-  */
+/**
+ * Thread-Safe repository used to carry data throughout the test scenario
+ * (Runtime).
+ * <p>
+ * Features:
+ * 1. Thread-Safe: Data does not get mixed during parallel test runs.
+ * 2. Type-Safe: Reduces the risk of casting errors thanks to generic methods.
+ * 3. Logged: Data addition/reading operations are logged, making debugging
+ * easier.
+ * </p>
+ */
 public class ScenarioContext {
 
     private static final Logger logger = LogManager.getLogger(ScenarioContext.class);
@@ -32,6 +34,7 @@ public class ScenarioContext {
 
     /**
      * Adds data to Context with an Enum key. (Recommended Method)
+     * 
      * @param key   ContextKey Enum
      * @param value Object to be stored
      */
@@ -41,11 +44,13 @@ public class ScenarioContext {
 
     /**
      * Adds data to Context with a String key. (For dynamic situations)
+     * 
      * @param key   String key
      * @param value Object to be stored
      */
     public static void set(String key, Object value) {
-        // You can be careful when logging sensitive data, but it's valuable for debugging.
+        // You can be careful when logging sensitive data, but it's valuable for
+        // debugging.
         logger.info(String.format("Context SET -> Key: [%s] | Value: [%s]", key, value));
         threadLocalContext.get().put(key, value);
     }
@@ -75,13 +80,16 @@ public class ScenarioContext {
      */
     public static Integer getInt(ContextKey key) {
         Object value = get(key);
-        if (value == null) return null;
+        if (value == null)
+            return null;
 
         try {
-            if (value instanceof Integer) return (Integer) value;
+            if (value instanceof Integer)
+                return (Integer) value;
             return Integer.parseInt(value.toString());
         } catch (NumberFormatException e) {
-            String errorMsg = String.format("Context Cast Error: Key [%s] value could not be converted to Integer. Value: [%s]", key, value);
+            String errorMsg = String.format(
+                    "Context Cast Error: Key [%s] value could not be converted to Integer. Value: [%s]", key, value);
             logger.error(errorMsg);
             throw new RuntimeException(errorMsg);
         }
@@ -92,9 +100,11 @@ public class ScenarioContext {
      */
     public static Boolean getBoolean(ContextKey key) {
         Object value = get(key);
-        if (value == null) return null;
+        if (value == null)
+            return null;
 
-        if (value instanceof Boolean) return (Boolean) value;
+        if (value instanceof Boolean)
+            return (Boolean) value;
         return Boolean.parseBoolean(value.toString());
     }
 
@@ -102,11 +112,13 @@ public class ScenarioContext {
      * GENERIC GET: Returns data by casting it to the desired Class type.
      * This is the safest method.
      *
-     * Example: UserData user = ScenarioContext.get(ContextKey.CURRENT_USER, UserData.class);
+     * Example: UserData user = ScenarioContext.get(ContextKey.CURRENT_USER,
+     * UserData.class);
      */
     public static <T> T get(ContextKey key, Class<T> type) {
         Object value = get(key);
-        if (value == null) return null;
+        if (value == null)
+            return null;
 
         if (type.isInstance(value)) {
             return type.cast(value);

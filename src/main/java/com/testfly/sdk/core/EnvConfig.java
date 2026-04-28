@@ -61,6 +61,10 @@ public interface EnvConfig extends Config {
     @DefaultValue("target/traces")
     String tracePath();
 
+    @Key("retry.enabled")
+    @DefaultValue("true")
+    boolean isRetryEnabled();
+
     @Key("retry.max")
     @DefaultValue("2")
     int retryMax();

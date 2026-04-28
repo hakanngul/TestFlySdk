@@ -3,6 +3,10 @@
 
 <suite name="API Test Suite" parallel="tests" thread-count="4" verbose="1">
 
+    <listeners>
+        <listener class-name="com.testfly.sdk.reporting.listeners.RetryAnnotationTransformer"/>
+    </listeners>
+
     <parameter name="browser" value="chrome"/>
     <parameter name="headless" value="false"/>
 

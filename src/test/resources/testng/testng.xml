@@ -4,12 +4,13 @@
 <suite name="TestFly Test Suite" parallel="tests" thread-count="4" verbose="1">
 
     <!-- Listeners -->
-<!--    <listeners>-->
+    <listeners>
+        <listener class-name="com.testfly.sdk.reporting.listeners.RetryAnnotationTransformer"/>
 <!--        <listener class-name="com.testfly.sdk.reporting.listeners.ExecutionListener"/>-->
 <!--        <listener class-name="com.testfly.sdk.reporting.listeners.WebTestListener"/>-->
 <!--        <listener class-name="com.testfly.sdk.reporting.listeners.ApiTestListener"/>-->
 <!--        <listener class-name="com.testfly.sdk.reporting.listeners.ExtentReportListener"/>-->
-<!--    </listeners>-->
+    </listeners>
 
     <!-- Parameters -->
     <parameter name="browser" value="chrome"/>
