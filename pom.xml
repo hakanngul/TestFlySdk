@@ -23,7 +23,7 @@
         <testng.version>7.10.2</testng.version>
         <cucumber.version>7.18.1</cucumber.version>
         <restassured.version>5.5.0</restassured.version>
-        <poi.version>5.3.0</poi.version>
+        <poi.version>5.5.1</poi.version>
         <log4j2.version>2.23.1</log4j2.version>
         <jackson.version>2.17.2</jackson.version>
         <gson.version>2.11.0</gson.version>
@@ -130,7 +130,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
+            <version>3.20.0</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -228,13 +228,13 @@
                     <suiteXmlFiles>
                         <suiteXmlFile>src/test/resources/testng/testng.xml</suiteXmlFile>
                     </suiteXmlFiles>
-                    <parallel>tests</parallel>
+                    <parallel>methods</parallel>
                     <threadCount>4</threadCount>
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <properties>
                         <property>
                             <name>parallel</name>
-                            <value>tests</value>
+                            <value>methods</value>
                         </property>
                         <property>
                             <name>dataproviderthreadcount</name>
@@ -271,5 +271,67 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Varsayılan: Tüm testler (API + Web) -->
+        <profile>
+            <id>all</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${maven.surefire.plugin.version}</version>
+                        <configuration>
+                            <suiteXmlFiles>
+                                <suiteXmlFile>src/test/resources/testng/testng.xml</suiteXmlFile>
+                            </suiteXmlFiles>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Sadece API Testleri -->
+        <profile>
+            <id>api</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${maven.surefire.plugin.version}</version>
+                        <configuration>
+                            <suiteXmlFiles>
+                                <suiteXmlFile>src/test/resources/testng/api.xml</suiteXmlFile>
+                            </suiteXmlFiles>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Sadece Web Testleri -->
+        <profile>
+            <id>web</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${maven.surefire.plugin.version}</version>
+                        <configuration>
+                            <suiteXmlFiles>
+                                <suiteXmlFile>src/test/resources/testng/web.xml</suiteXmlFile>
+                            </suiteXmlFiles>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

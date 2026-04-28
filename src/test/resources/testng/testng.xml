@@ -13,7 +13,7 @@
 
     <!-- Parameters -->
     <parameter name="browser" value="chrome"/>
-    <parameter name="headless" value="true"/>
+    <parameter name="headless" value="false"/>
 
     <!-- Cucumber Web Tests -->
     <test name="Cucumber Web Tests">

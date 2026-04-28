@@ -64,4 +64,12 @@ public interface EnvConfig extends Config {
     @Key("retry.max")
     @DefaultValue("2")
     int retryMax();
+
+    @Key("parallel")
+    @DefaultValue("true")
+    boolean isParallel();
+
+    @Key("thread.count")
+    @DefaultValue("4")
+    int threadCount();
 }
