@@ -12,85 +12,104 @@ import io.qameta.allure.Allure;
 import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class WebHooks {
 
     private static final Logger logger = LogManager.getLogger(WebHooks.class);
+    private static final String ALLURE_RESULTS = "target/allure-results";
 
     @Before(value = "@ui or @web", order = 1)
     public void beforeScenario(Scenario scenario) {
         logger.info("Starting scenario: {}", scenario.getName());
-
         String browserType = ConfigManager.get().browser();
         BrowserManager.initializeDriver(browserType);
         BrowserManager.startTracing();
-
-        logger.info("Browser initialized for thread: {}", Thread.currentThread().threadId());
-    }
-
-    @Before(value = "@ui or @web", order = 2)
-    public void logScenarioStart(Scenario scenario) {
-        scenario.log("Scenario started with thread ID: " + Thread.currentThread().threadId());
     }
 
     @After(value = "@ui or @web", order = 1)
     public void afterScenario(Scenario scenario) {
-        logger.info("=== After Scenario Hook Started for: {} ===", scenario.getName());
+        logger.info("=== After Scenario Hook: {} ===", scenario.getName());
 
         if (scenario.isFailed()) {
-            logger.error("Scenario failed: {}", scenario.getName());
-            BrowserManager.stopTracing(scenario.getName());
-            byte[] screenshot = takeScreenshotBytes(scenario);
-            if (screenshot != null) {
-                Allure.addAttachment(scenario.getName() + "_screenshot.png", new ByteArrayInputStream(screenshot));
-            }
+            handleFailedScenario(scenario);
         } else {
-            BrowserManager.stopAndDiscardTracing();
-            logger.info("Scenario passed: {}", scenario.getName());
+            handlePassedScenario();
         }
 
         BrowserManager.quitDriver();
     }
 
-    @After(value = "@ui or @web", order = 2)
-    public void cleanup() {
-        logger.info("=== Cleanup Hook Started ===");
-        logger.info("=== Cleanup Hook Finished ===");
+    private void handleFailedScenario(Scenario scenario) {
+        logger.error("Scenario failed: {}", scenario.getName());
+
+        BrowserManager.stopTracing(scenario.getName());
+
+        // Screenshot (tek ekleme)
+        takeScreenshotBytes(scenario);
+
+        // Video (tek ekleme)
+        BrowserManager.saveVideo(scenario.getName()).ifPresent(videoPath -> {
+            attachVideoToAllure(scenario, videoPath);
+        });
+    }
+
+    private void handlePassedScenario() {
+        BrowserManager.stopAndDiscardTracing();
+        BrowserManager.discardVideo();
+        logger.info("Scenario passed");
+    }
+
+    /**
+     * Video'yu Allure'a TEK SEFERDE ekler.
+     */
+    private void attachVideoToAllure(Scenario scenario, Path videoPath) {
+        try {
+            long fileSize = Files.size(videoPath);
+            logger.info("Video size: {} bytes", fileSize);
+
+            // Tek ekleme: Allure.addAttachment ile
+            byte[] videoBytes = Files.readAllBytes(videoPath);
+            Allure.addAttachment(
+                    scenario.getName() + "_video.mp4",
+                    "video/mp4",
+                    new ByteArrayInputStream(videoBytes),
+                    ".mp4");
+
+            scenario.log("Video saved: " + videoPath.toAbsolutePath());
+            logger.info("Video attached to Allure: {}", videoPath.getFileName());
+
+        } catch (Exception e) {
+            logger.error("Failed to attach video: {}", e.getMessage(), e);
+        }
     }
 
     private byte[] takeScreenshotBytes(Scenario scenario) {
         try {
             Page page = BrowserManager.getPage();
-            if (page != null) {
-                String timestamp = String.valueOf(System.currentTimeMillis());
-                String fileName = StringUtils.replace(scenario.getName(), " ", "_") + "_" + timestamp;
-                String screenshotPath = "target/screenshots/" + fileName + ".png";
-
-                java.nio.file.Files.createDirectories(Paths.get("target/screenshots"));
-
-                byte[] screenshotBytes = page.screenshot(new Page.ScreenshotOptions()
-                        .setPath(Paths.get(screenshotPath)));
-
-                scenario.attach(screenshotBytes, "image/png", fileName + ".png");
-
-                try {
-                    java.nio.file.Files.write(
-                            Paths.get("target/allure-results/" + fileName + ".png"),
-                            screenshotBytes);
-                    logger.info("Screenshot also copied to Allure results: {}", fileName + ".png");
-                } catch (Exception ex) {
-                    logger.warn("Failed to copy screenshot to Allure results: {}", ex.getMessage());
-                }
-
-                logger.info("Screenshot saved: {}", screenshotPath);
-                return screenshotBytes;
-            } else {
-                logger.warn("Cannot take screenshot: Page is null");
+            if (page == null || page.isClosed()) {
+                logger.warn("Page is null or closed, cannot take screenshot");
                 return null;
             }
+
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            String fileName = StringUtils.replace(scenario.getName(), " ", "_") + "_" + timestamp;
+
+            Files.createDirectories(Paths.get("target/screenshots"));
+
+            byte[] screenshotBytes = page.screenshot(new Page.ScreenshotOptions()
+                    .setPath(Paths.get("target/screenshots/" + fileName + ".png")));
+
+            // Tek ekleme: scenario.attach (Allure Cucumber plugin otomatik alır)
+            scenario.attach(screenshotBytes, "image/png", fileName + ".png");
+
+            logger.info("Screenshot saved: {}", fileName);
+            return screenshotBytes;
+
         } catch (Exception e) {
-            logger.error("Failed to take screenshot for scenario: {}", scenario.getName(), e);
+            logger.error("Screenshot failed: {}", e.getMessage(), e);
             return null;
         }
     }

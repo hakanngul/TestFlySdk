@@ -40,7 +40,8 @@ public class GlobalHooks {
                 "target/screenshots",
                 "target/allure-results",
                 "target/extent-reports",
-                "target/traces"
+                "target/traces",
+                "target/videos"
         };
 
         for (String dir : dirs) {
