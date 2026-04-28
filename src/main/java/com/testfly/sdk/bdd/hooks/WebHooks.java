@@ -3,13 +3,10 @@ package com.testfly.sdk.bdd.hooks;
 import com.microsoft.playwright.Page;
 import com.testfly.sdk.core.BrowserManager;
 import com.testfly.sdk.core.ConfigManager;
-import com.testfly.sdk.core.PlaywrightManager;
 import com.testfly.sdk.core.LogManager;
 import com.testfly.sdk.utils.StringUtils;
 import io.cucumber.java.After;
-import io.cucumber.java.AfterAll;
 import io.cucumber.java.Before;
-import io.cucumber.java.BeforeAll;
 import io.cucumber.java.Scenario;
 import io.qameta.allure.Allure;
 import org.apache.logging.log4j.Logger;
@@ -62,11 +59,6 @@ public class WebHooks {
         logger.info("=== Cleanup Hook Finished ===");
     }
 
-    @AfterAll
-    public static void afterAll() {
-        PlaywrightManager.dispose();
-    }
-
     private byte[] takeScreenshotBytes(Scenario scenario) {
         try {
             Page page = BrowserManager.getPage();
@@ -78,15 +70,14 @@ public class WebHooks {
                 java.nio.file.Files.createDirectories(Paths.get("target/screenshots"));
 
                 byte[] screenshotBytes = page.screenshot(new Page.ScreenshotOptions()
-                    .setPath(Paths.get(screenshotPath)));
+                        .setPath(Paths.get(screenshotPath)));
 
                 scenario.attach(screenshotBytes, "image/png", fileName + ".png");
 
                 try {
                     java.nio.file.Files.write(
-                        Paths.get("target/allure-results/" + fileName + ".png"),
-                        screenshotBytes
-                    );
+                            Paths.get("target/allure-results/" + fileName + ".png"),
+                            screenshotBytes);
                     logger.info("Screenshot also copied to Allure results: {}", fileName + ".png");
                 } catch (Exception ex) {
                     logger.warn("Failed to copy screenshot to Allure results: {}", ex.getMessage());
